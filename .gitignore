@@ -7,5 +7,6 @@ target/
 .stack-work/
 *.lock
 
+build/
 out/
 .gradle/
