@@ -1,4 +1,5 @@
 .idea/
 *.iml
 .lein-repl-history
+.lein-failures
 target/
