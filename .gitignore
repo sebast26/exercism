@@ -3,3 +3,6 @@
 .lein-repl-history
 .lein-failures
 target/
+
+.stack-work/
+*.lock
