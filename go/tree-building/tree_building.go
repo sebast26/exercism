@@ -14,49 +14,47 @@ type Record struct {
 	Parent int
 }
 
-func (r Record) valid() bool {
-	if r.ID == 0 && r.Parent != 0 {
-		return false
-	}
-	return true
-}
-
 type Node struct {
 	ID       int
 	Children []*Node
 }
 
 func Build(records []Record) (*Node, error) {
-	var nMap = make(map[int]*Node, len(records))
-	for _, record := range records {
-		if !record.valid() {
-			return nil, ErrInvalidInput
-		}
-		nMap[record.ID] = &Node{
-			ID:       record.ID,
-			Children: make([]*Node, 0),
-		}
-	}
-
 	sort.Slice(records, func(i, j int) bool {
 		return records[i].ID < records[j].ID
 	})
 
-	var root *Node
-	for _, record := range records {
-		parent, ok := nMap[record.Parent]
-		if !ok {
-			continue
-		}
-		if record.ID == 0 {
-			root = nMap[record.ID]
-			continue
-		}
-		parent.Children = append(parent.Children, nMap[record.ID])
+	if err := checkRecords(records); err != nil {
+		return nil, err
 	}
 
-	//if root == nil {
-	//	return nil, errors.New("")
-	//}
+	nodes := make([]*Node, len(records))
+	for i, r := range records {
+		nodes[i] = &Node{
+			ID:       r.ID,
+			Children: make([]*Node, 0),
+		}
+	}
+
+	var root *Node
+	for i, r := range records {
+		if r.ID == 0 {
+			root = nodes[r.ID]
+			continue
+		}
+		parent := nodes[r.Parent]
+		parent.Children = append(parent.Children, nodes[i])
+	}
+
 	return root, nil
+}
+
+func checkRecords(records []Record) error {
+	for i, r := range records {
+		if r.ID != i || r.Parent > r.ID || r.ID > 0 && r.Parent == r.ID {
+			return ErrInvalidInput
+		}
+	}
+
+	return nil
 }
