@@ -1,8 +1,7 @@
 package matrix
 
 import (
-	"bufio"
-	"fmt"
+	"errors"
 	"strconv"
 	"strings"
 )
@@ -11,20 +10,22 @@ type Matrix struct {
 	m [][]int
 }
 
+var ErrInvalidInput = errors.New("invalid input")
+
 func New(s string) (*Matrix, error) {
-	scanner := bufio.NewScanner(strings.NewReader(s))
+	lines := strings.Split(s, "\n")
+
 	var m [][]int
-	for scanner.Scan() {
-		line := scanner.Text()
+	for _, line := range lines {
 		items := strings.Split(strings.TrimSpace(line), " ")
 		if len(items) == 0 {
-			return nil, fmt.Errorf("uneven rows")
+			return nil, ErrInvalidInput
 		}
 		numbers := make([]int, 0, len(items))
 		for _, item := range items {
 			num, err := strconv.Atoi(item)
 			if err != nil {
-				return nil, err
+				return nil, ErrInvalidInput
 			}
 			numbers = append(numbers, num)
 		}
@@ -34,22 +35,40 @@ func New(s string) (*Matrix, error) {
 	rowItems := len(m[0])
 	for _, row := range m {
 		if rowItems != len(row) {
-			return nil, fmt.Errorf("uneven rows")
+			return nil, ErrInvalidInput
 		}
 	}
 
-	return &Matrix{m: m}, scanner.Err()
+	return &Matrix{m: m}, nil
 }
 
 // Cols and Rows must return the results without affecting the matrix.
 func (m *Matrix) Cols() [][]int {
-	panic("Please implement the Cols function")
+	ret := make([][]int, 0, len(m.m[0]))
+	for i := 0; i < len(m.m[0]); i++ {
+		col := make([]int, 0, len(m.m))
+		for j := 0; j < len(m.m); j++ {
+			col = append(col, m.m[j][i])
+		}
+		ret = append(ret, col)
+	}
+	return ret
 }
 
 func (m *Matrix) Rows() [][]int {
-	panic("Please implement the Rows function")
+	ret := make([][]int, 0, len(m.m))
+	for _, r := range m.m {
+		cp := make([]int, len(r))
+		copy(cp, r)
+		ret = append(ret, cp)
+	}
+	return ret
 }
 
 func (m *Matrix) Set(row, col, val int) bool {
-	panic("Please implement the Set function")
+	if row < 0 || col < 0 || row >= len(m.m[0]) || col >= len(m.m) {
+		return false
+	}
+	m.m[row][col] = val
+	return true
 }
