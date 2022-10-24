@@ -1,0 +1,11 @@
+{
+  "editor.fontFamily": "JetBrains Mono",
+  "editor.fontSize": 16.0,
+  "go.root": "/opt/homebrew/Cellar/go/1.19.1/libexec",
+  "go.modules": "true",
+  "terminal.fontFamily": "JetBrains Mono",
+  //    "terminal.caretShape": "$editor",
+  "ff.showIdentifierUsagesPostline": false,
+  "theme": "sync-with-os",
+  "keymap": "macos-ij",
+}
